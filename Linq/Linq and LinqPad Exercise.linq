@@ -69,3 +69,35 @@ var Query3 = from x in Stores
                 }
     };
     Query3.Dump("Query 3");
+	
+	//-------------------------------------------------------------------------------
+//Print out all product items on a requested order (use Order #33). Group by Category and order by Product Description. 
+//You do not need to format money as this would be done at the presentation level. Use the QtyPicked in your calculations. 
+//Hint: You will need to using type casting (decimal). Use of the ternary operator will help.
+
+
+var Query4 = from x in OrderLists
+where x.OrderID == 33
+group x by x.Product.Category.Description into categoryItems
+	orderby categoryItems.Key 
+	select new 
+	{
+		Category = categoryItems.Key,
+		
+		OrderProducts = from y in categoryItems											
+							select new 
+						{
+							Product = y.Product.Description,							
+							Price = y.Price,
+							PickedQty = y.QtyPicked,
+							Discount = y.Discount,
+							Subtotal =  (decimal)y.QtyPicked * (y.Price - y.Discount),
+							Tax = !y.Product.Taxable ? 0.00m : (decimal)y.QtyPicked * (y.Price - y.Discount) * 0.05m,
+							ExtendedPrice = !y.Product.Taxable ? (decimal)y.QtyPicked * (y.Price - y.Discount)
+									: (decimal)y.QtyPicked * (y.Price - y.Discount) * 1.05m	
+							
+						}
+						
+	};
+	Query4.Dump("Query 4");
+	
