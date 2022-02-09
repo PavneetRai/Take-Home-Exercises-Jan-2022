@@ -23,3 +23,23 @@ var Query1 = from x in Products
 						TimesPurchased = x.OrderLists.Count()
 					};
 					Query1.Dump("Query 1");
+//---------------------------------------------------------------------------------		
+//We want a mailing list for a Valued Customers flyer that is being sent out. List the customer addresses for customers who have shopped at each store. List by the store. 
+//Include the store location as well as the customer's address. Do NOT include the customer name in the results.
+var Query2 = from x in Stores
+
+orderby x.Location
+select new 
+{
+	Locations = x.Location,
+	Client = (from y in x.Orders
+				
+			select new 
+			
+			{
+				Address = y.Customer.Address,
+				City = y.Customer.City,
+				Province = y.Customer.Province
+			}).Distinct()
+};
+Query2.Dump("Query 2");					
