@@ -42,4 +42,30 @@ select new
 				Province = y.Customer.Province
 			}).Distinct()
 };
-Query2.Dump("Query 2");					
+Query2.Dump("Query 2");			
+
+//Create a Daily Sales per Store request for a specified month.
+//Order stores by city by location. For Sales, show order date, number of orders, total sales without GST tax and total GST tax.
+var Query3 = from x in Stores
+    
+    orderby x.City,x.Location
+    
+    select new 
+    {
+        City = x.City,
+        Locations = x.Location,
+        Sales =from y in x.Orders
+                    
+                where y.OrderDate >= new DateTime(2017,12,1) && y.OrderDate <= new DateTime(2017,12,30)
+                group y by y.OrderDate into gTemp
+                select new 
+                
+                {
+                    date = gTemp.Key,
+                    numberoforders = gTemp.Count(),
+                    productsales = gTemp.Sum(st => st.SubTotal),
+                    gst = gTemp.Sum(st => st.GST)
+					//or GST = (from z in gTemp select z.GST).Sum()
+                }
+    };
+    Query3.Dump("Query 3");
