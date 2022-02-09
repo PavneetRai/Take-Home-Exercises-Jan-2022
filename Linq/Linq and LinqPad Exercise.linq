@@ -43,7 +43,7 @@ select new
 			}).Distinct()
 };
 Query2.Dump("Query 2");			
-
+//-------------------------------------------------------------------------------
 //Create a Daily Sales per Store request for a specified month.
 //Order stores by city by location. For Sales, show order date, number of orders, total sales without GST tax and total GST tax.
 var Query3 = from x in Stores
@@ -65,12 +65,12 @@ var Query3 = from x in Stores
                     numberoforders = gTemp.Count(),
                     productsales = gTemp.Sum(st => st.SubTotal),
                     gst = gTemp.Sum(st => st.GST)
-					//or GST = (from z in gTemp select z.GST).Sum()
+					
                 }
     };
     Query3.Dump("Query 3");
 	
-	//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 //Print out all product items on a requested order (use Order #33). Group by Category and order by Product Description. 
 //You do not need to format money as this would be done at the presentation level. Use the QtyPicked in your calculations. 
 //Hint: You will need to using type casting (decimal). Use of the ternary operator will help.
@@ -100,4 +100,19 @@ group x by x.Product.Category.Description into categoryItems
 						
 	};
 	Query4.Dump("Query 4");
-	
+//-------------------------------------------------------------------------------
+//Generate a report on store orders and sales. Group this report by store. Show the total orders, the average order size (number of items per order) and average pre-tax revenue.
+
+var Query5 = from x in Stores
+orderby x.Location
+select new 
+	{
+  		Location = x.Location,
+  		Orders = x.Orders.Count(),
+ 		AvgSize = (from s in x.Orders
+  			select s.OrderID).Average(),
+  		AvgRevenue = x.Orders.Average(st => st.SubTotal)  
+	};
+Query5.Dump("Query 5");
+
+
