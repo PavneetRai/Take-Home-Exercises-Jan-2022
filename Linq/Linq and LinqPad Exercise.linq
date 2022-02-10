@@ -114,5 +114,24 @@ select new
   		AvgRevenue = x.Orders.Average(st => st.SubTotal)  
 	};
 Query5.Dump("Query 5");
+//-------------------------------------------------------------------------------
+//List all the products a customer (use Customer #1) has purchased and the number of times the product was purchased. Order by number of times purchased then description.
+var Query6 = from x in Customers
+where x.CustomerID == 1
+select new
+{
+	Customer = x.LastName + ", " + x.FirstName,
+	OrdersCount = x.Orders.Count(),
+	Items = from y in x.Orders
+	from z in y.OrderLists
+	group z by z.Product into gTemp
+	orderby gTemp.Count() descending , gTemp.Key.Description 
+	select new
+	{
+		Description = gTemp.Key.Description,
+		timesbought = gTemp.Count() 
+	}
+};
 
+Query6.Dump("Query 6");
 
